@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html>
+  <style type="text/css" media="screen">
+    canvas, img { display:block; margin:1em auto; border:1px solid black; }
+  </style>
+  <body>
+
+    <canvas id="myCanvas" width="400" height="300" style="border:1px solid black;">
+        Votre navigateur ne supporte pas canvas.
+    </canvas>
+    <script type="text/javascript">
+      window.onload = function()
+      {
+          var canvas = document.getElementById("myCanvas");
+          canvas.width = 1500; //document.width is obsolete
+          canvas.height = 800; //document.height is obsolete
+          canvasH = canvas.height;
+
+
+          if(!canvas)
+          {
+              alert("Impossible de r�cup�rer le canvas");
+              return;
+          }
+
+          var context = canvas.getContext("2d");
+          if(!context)
+          {
+              alert("Impossible de r�cup�rer le context");
+              return;
+          }
+
+
+          // Initialisation des variables de base
+          var posX = canvas.width;
+          var posY = Math.floor((Math.random() *  canvas.height) + 1);
+          var taille = 35; // Parametre de la taille des triangles
+          var nombreTriangles = 45; // Parametre du nombre des triangles
+          var vitesse = 0.75; // Parametre de la vitesse des triangles
+
+
+          // holds all our triangles
+          var boxes = [3*nombreTriangles];
+
+
+          var Triangle=( function(){
+            var self;
+            function Triangle(x, y, vitesse, taille, couleur, circledOrNot) {
+              self=this;
+              this.x = x;
+              this.y = y;
+              this.vitesse = vitesse;
+              this.taille = taille;
+              this.couleur = couleur;
+              this.circledOrNot = circledOrNot;
+            }
+            Triangle.prototype.draw=function(context){
+              var x1 = this.x
+              var x2 = this.x + this.taille
+              var x3 = this.x + (this.taille)/2
+              var y1 = this.y
+              var y2 = this.y - this.taille
+              var centerX = (x1+x2+x3)/3;
+              var centerY = (y1+y1+y2)/3;
+              var radius = 35;
+
+              if(this.circledOrNot == 1) {
+                // draw the colored region
+                context.beginPath();
+                context.arc(centerX, centerY, 25,0,2*Math.PI);
+                // draw the stroke
+                context.lineWidth = 5;
+                context.strokeStyle = '#FF0000';
+                context.stroke();
+              }
+              // Define triangle
+              context.beginPath();//On d�marre un nouveau trac�
+              context.moveTo(x1, y1); //On se d�place au coin supp gauche
+              context.lineTo(x2, y1);
+              context.lineTo(x3, y2);
+              context.lineTo(x1, y1);
+              //Def couleur des triangles
+              context.fillStyle = this.couleur;
+              context.fill(); // On colore les triangles
+            };
+            return(Triangle);
+          })();
+
+          function getRandomIntInclusive(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min +1)) + min;
+          }
+
+          for (var diff = 0; diff < 15; diff++)
+          {
+            //On créé les triangles de chaque vague
+            if(diff < 5 && diff >= 0) {
+              for (var iter = nombreTriangles*diff; iter < nombreTriangles*(diff+1); iter++) {
+                  boxes[iter] = new Triangle(Math.floor((Math.random() *  canvas.width) + canvas.width*(diff+1)), getRandomIntInclusive(0 + taille, canvas.height), vitesse, taille, "yellow", 0);
+              }
+            }
+            if(diff < 10 && diff >= 5) {
+              for (var iter = nombreTriangles*diff; iter < nombreTriangles*(diff+1); iter++) {
+                  boxes[iter] = new Triangle(Math.floor((Math.random() *  canvas.width) + canvas.width*(diff+1)), getRandomIntInclusive(0 + taille/1.33, canvas.height), vitesse, taille/1.33, "yellow", 0);
+              }
+            }
+            if(diff < 15 && diff >= 10) {
+              for (var iter = nombreTriangles*diff; iter < nombreTriangles*(diff+1); iter++) {
+                  boxes[iter] = new Triangle(Math.floor((Math.random() *  canvas.width) + canvas.width*(diff+1)), getRandomIntInclusive(0 + taille/1.66, canvas.height), vitesse, taille/1.66, "yellow", 0);
+              }
+            }
+          }
+          var myInterval = setInterval(animate, 1000/300);
+          function animate()
+          {
+            context.clearRect(0, 0, canvas.width, canvas.height); // On clear le canvas -> suppression de la position pr�c�dente de la forme
+            context.fillStyle = "black"; // On remet la couleur pour le background
+            context.fillRect(0, 0, canvas.width, canvas.height); // On redessine le background
+
+            for (var iter = 0; iter < nombreTriangles*16; iter++) {
+              boxes[iter].x -= boxes[iter].vitesse;
+              boxes[iter].draw(context);
+            }
+          }
+      }
+    </script>
+      <a href="../home.html" class="button">Home</a>
+      <a href="Anouck - 1.3.html" class="button">Niveau Précédent</a>
+      <a href="Anouck - 1.5.html" class="button">Niveau Suivant</a>
+      <a href="Anouck - 1.4.html" class="button">Reset</a>
+  </body>
+</html>
